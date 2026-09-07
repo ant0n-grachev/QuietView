@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QuietView — local diagnostic</title>
+<style>
+:root{--native-fullscreen:no} @media(display-mode:fullscreen){:root{--native-fullscreen:yes}}
+*{box-sizing:border-box}body{font:16px/1.5 system-ui,sans-serif;color:#202124;background:#f5f6f8;margin:0;padding:32px 20px}
+main{max-width:1000px;margin:auto}h1{font-size:30px;line-height:1.15;margin:10px 0}h2{font-size:20px;margin:0 0 12px}
+p{max-width:850px}section{background:white;border:1px solid #d9dce1;border-radius:10px;padding:22px;margin:20px 0}
+table{border-collapse:collapse;width:100%;text-align:left;font-size:14px}th,td{border-bottom:1px solid #e0e2e6;padding:10px 8px;vertical-align:top}
+th{font-weight:600}td:first-child{width:36%}code,pre{font:13px/1.5 ui-monospace,monospace}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f5f7;padding:14px;border-radius:6px}
+button,input{font:inherit;padding:8px 12px;border:1px solid #aaa;border-radius:5px;background:white}
+button{cursor:pointer}input{max-width:100%;margin:4px 4px 4px 0}.muted{color:#555}
+.warning{border-left:4px solid #8a5b18;padding-left:16px}#readouts{overflow-x:auto}
+</style><script src="diagnostic.js" defer></script></head><body><main>
+<p class="muted">QUIETVIEW / LOCAL CHECK</p>
+<h1>Substituted values and remaining signals</h1>
+<p>This page does not inject or enable the extension itself. It reports what its own JavaScript sees. Nothing is uploaded.</p>
+<p class="warning" id="instructions">Install the extension and reload this page. For a file URL, enable “Allow access to file URLs” in the extension’s details. Switch tabs or minimize, then return. Passing these checks does not prove that other detection methods are blocked.</p>
+<section><h2>Current readouts</h2><div id="readouts"><table><thead><tr><th>Signal</th><th>Observed</th><th>Expected / scope</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section><h2>Screen details</h2><p>Without the extension, this button may request window-management permission. Decline it unless you intend to share real display details.</p>
+<button id="screens" type="button">Inspect screen details</button><pre id="screen-output">Not requested.</pre></section>
+<section><h2>Visibility performance history</h2><p>With the extension, the normal entry-list APIs should expose one initial “visible” entry, with no subsequent transitions.</p><pre id="timeline"></pre></section>
+<section><h2>Event log and input compatibility</h2><p>Window visibility/focus transitions should not appear below when covered. Input focus, blur, and native fullscreen events should still appear.</p>
+<label>First field <input id="first" placeholder="Click or type here"></label>
+<label>Second field <input id="second" placeholder="Then click here"></label>
+<pre id="events">No events yet.</pre></section>
+<section><h2>Known limitations visible in this test</h2>
+<p>Fullscreen values stay native by default; enabling optional fullscreen spoofing can create disagreement with CSS. Window dimensions and resize events remain real. A long animation-frame gap can indicate suspension, backgrounding, a busy computer, or other causes; it is not proof of a tab switch.</p>
+<p>Service-worker visibility/focus, worker APIs, freshly created realms, native API descriptors, real screen sharing, and server-side inactivity are outside this diagnostic’s protection checks.</p>
+</section></main></body></html>
