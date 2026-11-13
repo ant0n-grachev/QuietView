@@ -289,9 +289,10 @@ try:
             native_hidden_entry = any(entry['name'] == 'hidden' for entry in native_probe['after']['history'])
             native_hidden_delivery = 'hidden' in native_probe['after']['entries']
             if native_visibility_changed and native_hidden_entry and native_hidden_delivery:
+                protected_history = [entry['name'] for entry in protected_probe['after']['history']]
                 check('native hidden timeline entries and observer events filtered',
-                      [entry['name'] for entry in protected_probe['after']['history']]
-                      + protected_probe['after']['entries'], ['visible','visible'])
+                      (protected_history, protected_probe['after']['entries']),
+                      (['visible'], ['visible']))
             else:
                 skip('native hidden timeline entries and observer events filtered',
                      'The native reference did not demonstrate both a hidden entry and observer delivery.')
