@@ -10,8 +10,14 @@ Webpages can ask whether a tab is visible, whether its window has focus, and wha
 
 Download the [repository ZIP](https://github.com/ant0n-grachev/QuietView/archive/refs/heads/main.zip), or clone the source below. The [local diagnostic](docs/DETAILS.md#local-diagnostic) shows what an installed copy reports in Chrome.
 
+<p>
+  <a href="docs/images/popup-on.png"><img src="docs/images/popup-on.png" width="180" alt="QuietView in light mode, with protection on"></a>
+  <a href="docs/images/popup-off.png"><img src="docs/images/popup-off.png" width="180" alt="QuietView in dark mode, with protection off"></a>
+</p>
+
 ## Features
 
+- Turn protection on or off from the popup. Your setting stays on this browser.
 - Substitutes selected page visibility and focus values and filters visibility timeline entries.
 - Reports one virtual display and normalizes selected screen coordinates.
 - Substitutes supported main-window idle and lock readouts while preserving native permission checks.
@@ -19,7 +25,7 @@ Download the [repository ZIP](https://github.com/ant0n-grachev/QuietView/archive
 
 ## How it works
 
-A static content script runs at `document_start` in the page’s JavaScript world on eligible pages and frames. It wraps selected APIs and filters specific events. The popup describes the scope, and the diagnostic lets you check readouts for yourself. See the [privacy policy](PRIVACY.md) for site-access and data-handling details.
+While protection is on, a registered content script runs at `document_start` in the page’s JavaScript world on eligible pages and frames. It wraps selected APIs and filters specific events. The popup changes that registration and the diagnostic lets you check readouts for yourself. See the [privacy policy](PRIVACY.md) for site access and data handling.
 
 ## Tech stack
 
@@ -42,7 +48,7 @@ cd QuietView
 
 ## Configuration
 
-Use Chrome’s extension settings to pause QuietView or restrict site access. File URL access is optional and disabled unless you enable it. The [configuration reference](docs/DETAILS.md#pause-restrict-sites-or-customize) explains how to edit the local feature switches. Fullscreen and display-mode substitutions default to off.
+Protection starts on. Use the QuietView popup to switch it on or off, then reload open pages to apply the change. Use Chrome’s extension settings to restrict site access or enable optional file URL access. The [configuration reference](docs/DETAILS.md#pause-restrict-sites-or-customize) covers individual feature switches. Fullscreen and display-mode substitutions default to off.
 
 ## Testing
 
@@ -61,7 +67,7 @@ The installed-extension suite uses a disposable Chromium profile and an unpatche
 
 ## Limitations
 
-Substitutions are best-effort. Workers, service workers, newly created frames, and browser scheduling can expose signals outside coverage. Screen sharing, native permission decisions, and network identifiers remain under browser and website control. Some sites may behave differently if they depend on visibility events. See [behavior and limitations](docs/DETAILS.md#important-limits-and-possible-breakage) for specific examples.
+Substitutions are best-effort. After an unpacked browser restart, a page opened immediately may load before protection is ready. Workers, service workers, newly created frames, and browser scheduling can expose signals outside coverage. Screen sharing, native permission decisions, and network identifiers remain under browser and website control. Some sites may behave differently if they depend on visibility events. See [behavior and limitations](docs/DETAILS.md#important-limits-and-possible-breakage) for specific examples.
 
 ## Project structure
 
@@ -71,6 +77,6 @@ Substitutions are best-effort. Workers, service workers, newly created frames, a
 
 ## Versioning and credits
 
-Current source version **v1.0.0**. The [manifest](extension/manifest.json) defines the three-component application version and its `vX.Y.Z` display label. See the [changelog](CHANGELOG.md) for unreleased changes and the historical `v1` tag.
+Current source version **v1.1.0**. The [manifest](extension/manifest.json) defines the application version. See the [changelog](CHANGELOG.md) for unreleased changes and the historical `v1` tag.
 
 QuietView is maintained by Anton Grachev and distributed under the [MIT License](LICENSE). For bug reports, include the browser version and a minimal public or local reproduction.

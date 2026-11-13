@@ -19,9 +19,13 @@ python tests/test_browser.py --headless
 
 On Windows, use `.venv\Scripts\Activate.ps1`, set `$env:CHROMIUM_PATH` to the Playwright Chromium executable, and run `Get-ChildItem extension\*.js | ForEach-Object { node --check $_.FullName }` for the JavaScript check. On headless Linux, use `python -m playwright install --with-deps chromium` and run the core suite with `xvfb-run -a`. CI uses these Linux commands with a read-only workflow.
 
-The core and fixture suites inject the script into Chromium DOM contexts. The integration suite loads the unpacked extension into a disposable profile and checks its page-start behavior, page reload, and popup. For desktop visibility checks, also run `python tests/test_browser.py` without `--headless`. Use the Playwright browser for automated installation. `python tests/test_browser.py --headless --baseline` repeats the protection assertions without the extension and is expected to fail them.
+The core and fixture suites inject the script into Chromium DOM contexts. The integration suite loads the unpacked extension into a disposable profile and checks its page-start behavior, popup switch, reloads, and setting persistence across browser restarts. For desktop visibility checks, also run `python tests/test_browser.py` without `--headless`. Use the Playwright browser for automated installation. `python tests/test_browser.py --headless --baseline` repeats the protection assertions without the extension and is expected to fail them.
 
 ## Latest verification
+
+The v1.1.0 on/off behavior was tested in Chromium 147 with an unpacked extension. The installed suite passed 69 checks with two native visibility checks skipped. The first navigation after an unpacked restart can precede registration. The suite records that readout and checks automatic recovery without opening the popup.
+
+### v1.0.0 baseline
 
 Source version **v1.0.0**, November 12, 2026. Chrome for Testing 147.0.7727.15, Playwright 1.59.0, macOS 27.0.1 (Apple silicon).
 

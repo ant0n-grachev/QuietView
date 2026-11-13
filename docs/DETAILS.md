@@ -35,11 +35,13 @@ Switch to another tab or window, minimize Chrome, resize it, then return. Inspec
 
 No fake zero-monitor result: one screen is the coherent basic shape for a visible browser window. A fullscreen element is a DOM element, not the Boolean `true`. Returning `true` for every API would be incorrect.
 
-The source uses static, `document_start`, `MAIN`-world content scripts with eligible-frame matching. It does not rely on injecting a DOM `<script>` element. See https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts and https://developer.chrome.com/docs/extensions/reference/manifest/content-scripts.
+While protection is on, the extension registers a `document_start` content script in the `MAIN` world with eligible-frame matching. The switch changes that registration. [Chrome scripting API](https://developer.chrome.com/docs/extensions/reference/api/scripting)
 
 ## Pause, restrict sites or customize
 
-Use Chrome's extension controls to disable the extension or change its **Site access**, then reload affected pages. Disabling an extension does not reliably undo JavaScript changes already made to a loaded page.
+Use the popup’s **Protection** switch to change the setting for newly loaded pages. Reload open pages after switching. Chrome’s **Site access** controls which sites can receive protection.
+
+On a fresh install or when Chrome loads the unpacked extension again at startup, it can take a moment to restore script registration. Reload any page opened during that window to apply the saved setting.
 
 For individual feature switches, edit the `CONFIG` object at the top of `extension/shield.js`. Set unwanted features to `false`, click **Reload** on the extension at `chrome://extensions`, then reload webpages. `fullscreenReadouts` and `displayModeReadouts` are disabled by default so native fullscreen controls work. Enable them only if you explicitly want their readout substitutions and accept compatibility risks. Use site restrictions for important applications rather than accepting unexplained behavior.
 

@@ -101,7 +101,7 @@ For this request, scoped visible/focused/single-display substitutions are reason
 
 A claim of comprehensive protection would require coverage of workers and service workers, JavaScript and CSS consistency, fresh-frame behavior, native methods, scheduling, permission state, and observable interactions. It would also require adversarial tests across browser versions and platforms. That work has not been completed here. No custom extension can honestly promise that every site will always believe a person is paying attention, especially after navigation or disconnection.
 
-The shipped prototype is deliberately inspectable: no server, telemetry, storage, remote code, or synthetic input. Its coverage is described in [behavior and limitations](docs/DETAILS.md), with [verification results and test instructions](docs/TESTING.md). The diagnostic displays native-state signals that remain observable.
+The extension saves its on/off setting locally and uses no server, telemetry, remote code, or synthetic input. Its coverage is described in [behavior and limitations](docs/DETAILS.md), with [verification results and test instructions](docs/TESTING.md). The diagnostic displays native-state signals that remain observable.
 
 ## Primary sources
 

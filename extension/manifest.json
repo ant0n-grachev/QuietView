@@ -1,29 +1,19 @@
 {
   "manifest_version": 3,
   "name": "QuietView",
-  "version": "1.0.0",
-  "version_name": "v1.0.0",
+  "version": "1.1.0",
+  "version_name": "v1.1.0",
   "minimum_chrome_version": "119",
   "description": "Best-effort always-visible, focused and single-display readouts. No telemetry. See included limitations.",
-  "action": {
-    "default_title": "QuietView \u2014 scope and limitations",
-    "default_popup": "popup.html"
+  "permissions": ["scripting", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*", "file:///*"],
+  "background": {
+    "service_worker": "background.js"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*",
-        "file:///*"
-      ],
-      "js": [
-        "shield.js"
-      ],
-      "run_at": "document_start",
-      "world": "MAIN",
-      "all_frames": true,
-      "match_about_blank": true,
-      "match_origin_as_fallback": true
-    }
-  ]
+  "icons": { "128": "icon128.png" },
+  "action": {
+    "default_title": "QuietView",
+    "default_popup": "popup.html",
+    "default_icon": { "128": "icon128.png" }
+  }
 }

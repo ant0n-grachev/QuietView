@@ -14,7 +14,8 @@ import os
 from pathlib import Path
 import tempfile
 import threading
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+import time
+from playwright.sync_api import expect, sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 ROOT = Path(__file__).resolve().parents[1]
 PARSER = argparse.ArgumentParser(description=__doc__)
@@ -96,6 +97,27 @@ def launch(p, profile, extension=False):
     return ctx
 
 
+def open_protection_popup(ctx, popup_url=None):
+    popup = ctx.new_page()
+    if popup_url is None:
+        popup.goto('chrome://extensions/')
+        item = popup.locator('extensions-item').filter(has_text='QuietView')
+        popup_url = f"chrome-extension://{item.get_attribute('id')}/popup.html"
+    popup.goto(popup_url)
+    protection = popup.get_by_role('switch', name='Protection')
+    expect(protection).to_be_enabled(timeout=TIMEOUT)
+    return popup, protection
+
+
+def change_protection(protection, enabled):
+    protection.click()
+    expect(protection).to_be_enabled(timeout=TIMEOUT)
+    if enabled:
+        expect(protection).to_be_checked(timeout=TIMEOUT)
+    else:
+        expect(protection).not_to_be_checked(timeout=TIMEOUT)
+
+
 def disable_focus_emulation(ctx, page):
     # Playwright enables focus emulation separately on EVERY new main page.
     session = ctx.new_cdp_session(page)
@@ -168,6 +190,11 @@ try:
         with tempfile.TemporaryDirectory(prefix='quietview-test-') as profile:
             ctx = launch(p, profile, extension=not ARGS.baseline)
             page = ctx.pages[0]
+            if not ARGS.baseline:
+                popup, protection = open_protection_popup(ctx)
+                check('protection starts enabled on a fresh install', protection.is_checked())
+                popup_url = popup.url
+                popup.close()
             errors = []
             page.on('pageerror', lambda error: errors.append(str(error)))
             page.goto(base)
@@ -380,16 +407,50 @@ try:
             check('worker remains outside main-window patches (known limitation)',worker,{'idle':'function','focus':'undefined'})
             check('no uncaught page errors',errors,[])
             if not ARGS.baseline:
-                extensions = ctx.new_page()
-                extensions.goto('chrome://extensions/')
-                item = extensions.locator('extensions-item').filter(has_text='QuietView')
-                extension_id = item.get_attribute('id')
-                extensions.goto(f'chrome-extension://{extension_id}/popup.html')
-                manifest = json.loads((ROOT/'extension'/'manifest.json').read_text())
-                check('loaded extension popup displays the manifest version',
-                      extensions.locator('#version').inner_text(),
-                      f"{manifest['version_name']} · Local prototype")
-                extensions.close()
+                popup, protection = open_protection_popup(ctx, popup_url)
+                change_protection(protection, enabled=False)
+                check('switching off leaves the existing document patched until reload',
+                      page.evaluate(POINTER_READOUT), [7,9])
+                page.reload()
+                check('switching off restores native values on reload',
+                      page.evaluate('firstState.pointer'), [777,999])
+                fresh_page = ctx.new_page()
+                fresh_page.goto(base)
+                check('switching off also applies to new tabs',
+                      fresh_page.evaluate('firstState.pointer'), [777,999])
+                popup.close()
+                popup, protection = open_protection_popup(ctx, popup_url)
+                check('reopened popup remembers protection is off', protection.is_checked(), False)
+                ctx.close()
+
+                ctx = launch(p, profile, extension=True)
+                page = ctx.pages[0]
+                page.goto(base)
+                check('restarted browser preserves native values while protection is off',
+                      page.evaluate('firstState.pointer'), [777,999])
+                popup, protection = open_protection_popup(ctx, popup_url)
+                check('browser restart remembers protection is off', protection.is_checked(), False)
+                change_protection(protection, enabled=True)
+                page.reload()
+                check('switching on reapplies protection before the first inline script',
+                      page.evaluate('firstState.pointer'), [7,9])
+                ctx.close()
+
+                ctx = launch(p, profile, extension=True)
+                page = ctx.pages[0]
+                page.goto(base)
+                first_readout = page.evaluate('firstState.pointer')
+                observations.append({'test':'first navigation during unpacked extension startup',
+                                     'actual':first_readout})
+                # Chromium can load the first document before an unpacked extension
+                # has restored its dynamic script. Verify recovery without the popup.
+                readout = first_readout
+                deadline = time.monotonic() + TIMEOUT / 1000
+                while readout != [7,9] and time.monotonic() < deadline:
+                    page.reload()
+                    readout = page.evaluate('firstState.pointer')
+                check('restarted browser restores enabled protection without opening the popup',
+                      readout, [7,9])
             report = {'baseline':ARGS.baseline,'headless':ARGS.headless,'browser':browser_version,
                       'results':results,'observations':observations,
                       'passed':sum(r['status']=='pass' for r in results),

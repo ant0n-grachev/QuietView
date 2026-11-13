@@ -1,20 +1,129 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>QuietView</title>
-<style>
-  body{font:14px/1.5 system-ui,sans-serif;margin:0;padding:22px;width:320px;color:#202124;background:#fff}
-  h1{font-size:20px;margin:0 0 4px}h2{font-size:14px;margin:18px 0 6px}
-  p{margin:8px 0}small{color:#555}code{font-size:12px;background:#f2f3f5;padding:2px 4px;border-radius:3px}
-  .note{border-left:3px solid #8a5b18;padding-left:12px;margin-top:18px}
-</style></head><body>
-<h1>QuietView</h1><small id="version">Local prototype</small>
-<h2>Configured substitutions</h2>
-<p>Always-visible and focused page readouts, one virtual display, normalized screen coordinates, main-window active/unlocked readouts, and masked visibility history.</p>
-<p>Fullscreen controls stay native by default.</p>
-<div class="note"><strong>Not an undetectability guarantee.</strong>
-<p>CSS, timing, service workers, fresh execution contexts and actual navigation can still reveal state. This popup does not verify injection.</p></div>
-<h2>Pause or restrict websites</h2>
-<p>Use Chrome’s extension controls to change site access or disable this extension. Reload affected pages afterwards.</p>
-<p>After updating, click Reload at <code>chrome://extensions</code>, then reload your webpages. The extension sends no data.</p>
-<script src="popup.js"></script>
-</body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>QuietView</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #f8fafc;
+      --surface: #fff;
+      --text: #16242d;
+      --muted: #4b5d68;
+      --border: #d6e0e6;
+      --accent: #08756d;
+      --track: #60737f;
+      --thumb: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #10191f;
+        --surface: #19262e;
+        --text: #edf6f7;
+        --muted: #b2c4cc;
+        --border: #344852;
+        --accent: #67d5c3;
+        --track: #596f7a;
+      }
+      .switch input:checked + .track::after { background: #14252b; }
+    }
+
+    body {
+      box-sizing: border-box;
+      width: 272px;
+      margin: 0;
+      padding: 16px;
+      background: var(--background);
+      color: var(--text);
+      font: 13px/1.45 system-ui, sans-serif;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 19px;
+      line-height: 1.15;
+    }
+
+    .control {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface);
+    }
+
+    .control strong { margin-right: auto; }
+    #state { color: var(--muted); }
+    .switch { position: relative; display: block; width: 36px; height: 22px; }
+    .switch input {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .track {
+      display: block;
+      height: 100%;
+      border-radius: 99px;
+      background: var(--track);
+    }
+    .track::after {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--thumb);
+      content: "";
+    }
+    .switch input:checked + .track { background: var(--accent); }
+    .switch input:checked + .track::after { transform: translateX(14px); }
+    .switch input:focus-visible + .track {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .switch input:disabled { cursor: default; }
+    .switch input:disabled + .track { opacity: 0.55; }
+
+    #status { margin: 0; color: var(--muted); }
+    #status:not(:empty) { margin-top: 8px; }
+    h2 { margin: 13px 0 4px; font-size: 12px; }
+    ul { margin: 0; padding-inline-start: 17px; color: var(--muted); }
+    li + li { margin-top: 2px; }
+
+    @media (forced-colors: active) {
+      .switch input { opacity: 1; }
+      .track { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>QuietView</h1>
+  <label class="control">
+    <strong>Protection</strong>
+    <span id="state" aria-hidden="true">Loading…</span>
+    <span class="switch">
+      <input type="checkbox" role="switch" id="protection" disabled>
+      <span class="track" aria-hidden="true"></span>
+    </span>
+  </label>
+  <h2>Masks when on</h2>
+  <ul>
+    <li>Page visibility and focus</li>
+    <li>Display details and coordinates</li>
+    <li>Idle and lock status</li>
+  </ul>
+  <p id="status" role="status">Reload open pages after switching.</p>
+  <script src="popup.js"></script>
+</body>
+</html>
