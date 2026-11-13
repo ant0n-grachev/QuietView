@@ -112,6 +112,11 @@ def background_probe(ctx, page):
     page.bring_to_front()
     page.evaluate('''()=>{
       window.nativeTransitionEvents={visibility:0,blur:0};
+      window.transitionEntries=[];
+      window.transitionObserver=new PerformanceObserver(list=>{
+        transitionEntries.push(...list.getEntries().map(entry=>entry.name));
+      });
+      transitionObserver.observe({type:'visibility-state',buffered:true});
       document.addEventListener('visibilitychange',e=>{
         if(e.isTrusted)nativeTransitionEvents.visibility++;
       });
@@ -120,7 +125,7 @@ def background_probe(ctx, page):
       });
     }''')
     readout = '''({visibility:document.visibilityState,focus:document.hasFocus(),
-      events:{...nativeTransitionEvents},
+      events:{...nativeTransitionEvents},entries:[...transitionEntries],
       history:performance.getEntriesByType('visibility-state').map(e=>e.toJSON())})'''
     before = page.evaluate(readout)
     other.bring_to_front()
@@ -130,6 +135,7 @@ def background_probe(ctx, page):
         pass
     after = page.evaluate(readout)
     page.bring_to_front()
+    page.evaluate('transitionObserver.disconnect()')
     other.close()
     session.detach()
     # Closing a page also detaches its CDP session.
@@ -168,6 +174,8 @@ try:
             browser_version = ctx.browser.version if ctx.browser else page.evaluate('navigator.userAgent')
             print('Browser:',browser_version,flush=True)
             check('substitutions present before first inline script',page.evaluate('firstState.pointer'),[7,9])
+            page.reload()
+            check('installed extension reapplies before page scripts on reload',page.evaluate('firstState.pointer'),[7,9])
             check('visibility readout',page.evaluate('document.visibilityState'),'visible')
             check('hidden readout',page.evaluate('document.hidden'),False)
             check('focused readout',page.evaluate('document.hasFocus()'))
@@ -278,9 +286,15 @@ try:
             check('hidden history absent from readout',page.evaluate("performance.getEntriesByName('hidden','visibility-state').length"),0)
             check('visible history by name normalized',page.evaluate("performance.getEntriesByName('visible','visibility-state').map(e=>e.toJSON())"),[VISIBLE_ENTRY])
             check('visibility observer delivers initial normalized visible state',page.evaluate('visibilityObservations'),[[VISIBLE_ENTRY]])
-            if not native_visibility_changed:
+            native_hidden_entry = any(entry['name'] == 'hidden' for entry in native_probe['after']['history'])
+            native_hidden_delivery = 'hidden' in native_probe['after']['entries']
+            if native_visibility_changed and native_hidden_entry and native_hidden_delivery:
+                check('native hidden timeline entries and observer events filtered',
+                      [entry['name'] for entry in protected_probe['after']['history']]
+                      + protected_probe['after']['entries'], ['visible','visible'])
+            else:
                 skip('native hidden timeline entries and observer events filtered',
-                     'The native reference generated no hidden transition; synthetic fixture coverage is separate.')
+                     'The native reference did not demonstrate both a hidden entry and observer delivery.')
             perf = page.evaluate('''async()=>Promise.race([
               new Promise(resolve=>{
                 const observer=new PerformanceObserver(list=>{
@@ -354,6 +368,8 @@ try:
             csp = ctx.new_page()
             csp.goto(base+'/csp')
             check('strict CSP page receives substitutions',csp.evaluate(POINTER_READOUT),[7,9])
+            csp.close()
+            page.bring_to_front()
             check('CSS fullscreen rendering remains native',page.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--native-fullscreen').trim()"),'no')
             worker = page.evaluate('''()=>new Promise(resolve=>{
               const w=new Worker('/worker.js');const timeout=setTimeout(()=>{w.terminate();resolve('worker timeout')},1500);

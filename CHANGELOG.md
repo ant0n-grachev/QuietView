@@ -8,6 +8,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). App
 
 - Run JavaScript syntax checks, core and fixture suites, and the loaded-extension browser suite in GitHub Actions using Playwright’s pinned Chromium.
 
+- Verify that the installed extension reapplies on page reload and gate native hidden-timeline claims on a demonstrated transition and observer delivery.
+
 ## v1.0.0 baseline (tag `v1`)
 
 The [annotated `v1` tag](https://github.com/ant0n-grachev/QuietView/tree/v1) records the source baseline for manifest version `1.0.0`. The tag is dated 2026-09-07.
