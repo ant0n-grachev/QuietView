@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "QuietView",
-  "version": "1.1.0",
-  "version_name": "v1.1.0",
+  "version": "1.1.1",
+  "version_name": "v1.1.1",
   "minimum_chrome_version": "119",
   "description": "Best-effort always-visible, focused and single-display readouts. No telemetry. See included limitations.",
   "permissions": ["scripting", "storage"],

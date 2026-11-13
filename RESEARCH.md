@@ -4,7 +4,7 @@ Research date: **September 7, 2026**. The historical `v1` tag records the implem
 
 ## Main finding
 
-A coherent goal is **visible + focused + one display**, with tightly scoped handling of fullscreen and idle readouts. Returning `true` for everything is not coherent: `hidden` and `isExtended` must be false; `visibilityState` is a string; `fullscreenElement` is an element; screen enumeration is an object containing a one-element array. Those types and their relationships matter. [1][2][3]
+A coherent goal is **visible + focused + one display**, with tightly scoped handling of fullscreen and idle readouts. Returning `true` for everything is not coherent: `hidden` and `isExtended` must be false. `visibilityState` is a string. `fullscreenElement` is an element. Screen enumeration is an object containing a one-element array. Those types and their relationships matter. [1][2][3]
 
 More importantly, a webpage's `document` is not the only place attention state appears. The HTML performance timeline records visibility changes, and a service worker can obtain its window clients' visibility and focus through a separate execution environment. Replacing one getter does not replace these other channels. [1][4]
 
@@ -17,14 +17,14 @@ Priority here refers to relevance to attention/display disclosure, not a formal 
 | Surface | What it exposes | Suitable treatment | Prototype status |
 |---|---|---|---|
 | `document.hidden`, `visibilityState`, `visibilitychange` | Native document visibility and changes | Coherent visible/false readouts and suppress corresponding transitions | Implemented for the injected page realm and supported legacy aliases |
-| `document.hasFocus()`, window/document `focus` and `blur` | Whether focus is routed to the document | Report focused; distinguish window focus from input-element focus | Implemented; normal form focus and blur kept |
-| `VisibilityStateEntry`, performance queries and observers | Initial visibility and timestamped transitions | One initial visible record; no later hidden/visible records or visibility-only callback timing | Implemented for normal entry queries, observer callbacks and `takeRecords`; not a native internal-state replacement |
+| `document.hasFocus()`, window/document `focus` and `blur` | Whether focus is routed to the document | Report focused. Distinguish window focus from input-element focus | Implemented. Normal form focus and blur kept |
+| `VisibilityStateEntry`, performance queries and observers | Initial visibility and timestamped transitions | One initial visible record. No later hidden/visible records or visibility-only callback timing | Implemented for normal entry queries, observer callbacks and `takeRecords`. Not a native internal-state replacement |
 | `screen.isExtended` | Whether the desktop extends across more than one screen | Report false | Implemented where the property exists |
-| `getScreenDetails()`, `screenschange`, `currentscreenchange` | Screen count, geometry, labels and changes | One stable synthetic display with no real monitor-change notifications | Implemented with API-shaped data; not a genuine native `ScreenDetailed` |
-| Screen origin, `screenX/Y`, pointer/touch screen coordinates | Coordinates that can expose a virtual-desktop layout | Normalize origin and related coordinate reads together | Implemented for common JavaScript reads; not the browser's internal coordinates |
-| `fullscreenElement`, fullscreen booleans/events | DOM element fullscreen state | Return an element and suppress direct transitions only when willing to accept compatibility risks | Optional **readout-only** substitution; disabled by default |
-| JavaScript `matchMedia('(display-mode: fullscreen)')` | Browser display-mode state, distinct from element fullscreen | Treat consistently with the requested display-mode profile | Optional simple-query substitution, disabled by default; compound queries and native CSS remain native |
-| `IdleDetector.userState`, `.screenState`, `change` | User idle/active and screen lock state | Prefer denying unnecessary real access; optional page-world readout masking | Readouts masked in Window; native permissions intact; worker version unpatched |
+| `getScreenDetails()`, `screenschange`, `currentscreenchange` | Screen count, geometry, labels and changes | One stable synthetic display with no real monitor-change notifications | Implemented with API-shaped data. Not a genuine native `ScreenDetailed` |
+| Screen origin, `screenX/Y`, pointer/touch screen coordinates | Coordinates that can expose a virtual-desktop layout | Normalize origin and related coordinate reads together | Implemented for common JavaScript reads. Not the browser's internal coordinates |
+| `fullscreenElement`, fullscreen booleans/events | DOM element fullscreen state | Return an element and suppress direct transitions only when willing to accept compatibility risks | Optional **readout-only** substitution. Disabled by default |
+| JavaScript `matchMedia('(display-mode: fullscreen)')` | Browser display-mode state, distinct from element fullscreen | Treat consistently with the requested display-mode profile | Optional simple-query substitution, disabled by default. Compound queries and native CSS remain native |
+| `IdleDetector.userState`, `.screenState`, `change` | User idle/active and screen lock state | Prefer denying unnecessary real access. Optional page-world readout masking | Readouts masked in Window. Native permissions intact. Worker version unpatched |
 
 The APIs and separate concepts above are documented in the HTML, Fullscreen, Window Management, CSS Media Queries, and Idle Detection specifications. [1][2][3][6][7] The coordinate substitution and choice to keep form events working are implementation decisions, not guarantees supplied by those specifications.
 
@@ -38,7 +38,7 @@ Idle Detection has both Window and DedicatedWorker exposure. A Window-only patch
 
 ## Additional attention signals that should not be advertised as solved
 
-### Service-worker visibility and focus — major gap
+### Service-worker visibility and focus: major gap
 
 A site's service worker can use client APIs to obtain `WindowClient.visibilityState` and `.focused`. Client enumeration also has focus-related ordering. These are not aliases of a page's monkey-patched `document` properties. The current extension does not replace service-worker scripts or their client objects. [4]
 
@@ -46,7 +46,7 @@ A production design must explicitly address this separate environment rather tha
 
 ### Background scheduling and lifecycle
 
-Chrome can throttle timers, suspend animation frames, freeze pages or discard them. Page lifecycle events and `document.wasDiscarded` expose some of that behavior; an application can also observe gaps in its normal operation. A site or server may notice missed requests even when a getter says `visible`. Such gaps are evidence of inactivity or interruption, not conclusive proof of a tab switch. [8][9]
+Chrome can throttle timers, suspend animation frames, freeze pages or discard them. Page lifecycle events and `document.wasDiscarded` expose some of that behavior. An application can also observe gaps in its normal operation. A site or server may notice missed requests even when a getter says `visible`. Such gaps are evidence of inactivity or interruption, not conclusive proof of a tab switch. [8][9]
 
 The prototype deliberately does not replace clocks or attempt to keep a discarded page alive. Rewriting every timer would have major performance and correctness implications and still would not control an external server's clock. It leaves `pagehide`, `beforeunload`, `freeze`, `resume`, navigation timing and normal state-save paths alone.
 
@@ -64,9 +64,9 @@ The prototype does not fake wake-lock success, prevent release, spoof pointer-lo
 
 ### Real input and event timing
 
-Mouse/pointer departure, keyboard and scroll behavior, focus-related selectors, input timestamps, user-activation state and event timing provide other evidence of interaction. Script-dispatched events do not acquire browser-generated trust merely because code changes an unrelated property. Event Timing exposes information about actual interactions; it is not equivalent to page visibility. [1][12][13]
+Mouse/pointer departure, keyboard and scroll behavior, focus-related selectors, input timestamps, user-activation state and event timing provide other evidence of interaction. Script-dispatched events do not acquire browser-generated trust merely because code changes an unrelated property. Event Timing exposes information about actual interactions. It is not equivalent to page visibility. [1][12][13]
 
-The prototype generates no mouse movements, clicks, keystrokes or scrolls; does not alter `Event.isTrusted`; and preserves actual user-activation semantics. It does not claim a site cannot distinguish an untouched page from someone actively operating it. Visible and focused never prove that a human is looking at a screen.
+The prototype generates no mouse movements, clicks, keystrokes or scrolls. It leaves `Event.isTrusted` and user activation behavior intact. It does not claim a site cannot distinguish an untouched page from someone actively operating it. Visible and focused never prove that a human is looking at a screen.
 
 ### Rendered-element visibility and geometry
 
@@ -86,14 +86,14 @@ The following deserve a privacy review, but should not be folded into this exten
 
 | Group | Representative surfaces | Recommended approach for a broader privacy design |
 |---|---|---|
-| Persistent identifiers | Cookies, local storage, IndexedDB, cached state, account identity | Storage partitioning/restriction, appropriate clearing and separate profiles; a visibility patch does not address identity |
-| Network identification | IP address, request headers, cross-site requests and correlation | Browser/network controls and content filtering; do not fake API success while silently dropping legitimate requests |
+| Persistent identifiers | Cookies, local storage, IndexedDB, cached state, account identity | Storage partitioning/restriction, appropriate clearing and separate profiles. A visibility patch does not address identity |
+| Network identification | IP address, request headers, cross-site requests and correlation | Browser/network controls and content filtering. Do not fake API success while silently dropping legitimate requests |
 | Rendering fingerprints | Canvas, WebGL/WebGPU, audio rendering, font measurements | Coordinated browser-level normalization or carefully designed randomization, tested across related APIs |
-| Device and browser characteristics | User-Agent/Client Hints, CPU/memory hints, screen resolution, language, time zone | Reduce exposed detail using a coherent profile; inconsistent or rare combinations may themselves be identifying |
-| Privileged personal/hardware access | Camera/microphone, geolocation, screen sharing, local fonts, USB/Bluetooth/HID/serial access | Audit actual permission grants and decline unnecessary access; do not report arbitrary `granted` status |
+| Device and browser characteristics | User-Agent/Client Hints, CPU/memory hints, screen resolution, language, time zone | Reduce exposed detail using a coherent profile. Inconsistent or rare combinations may themselves be identifying |
+| Privileged personal/hardware access | Camera/microphone, geolocation, screen sharing, local fonts, USB/Bluetooth/HID/serial access | Audit actual permission grants and decline unnecessary access. Do not report arbitrary `granted` status |
 | Load and environment signals | Compute pressure, CPU performance tiers, connection information, battery and sensor data where supported | Evaluate availability, granularity, permission/policy rules and practical relevance individually |
 
-The categories of stateful/stateless fingerprinting, identifier correlation and entropy reduction are covered by W3C's fingerprinting guidance. That document supports treating defenses as a coordinated design rather than assuming more missing or constant values always yield more privacy. [16] Permission state is its own API contract; cosmetic readout changes do not revoke an actual grant. [17] Chromium's Compute Pressure and CPU Performance documentation illustrate why the hardware/environment inventory must evolve rather than be treated as a permanent exhaustive list. [18][19]
+The categories of stateful/stateless fingerprinting, identifier correlation and entropy reduction are covered by W3C's fingerprinting guidance. That document supports treating defenses as a coordinated design rather than assuming more missing or constant values always yield more privacy. [16] Permission state is its own API contract. Cosmetic readout changes do not revoke an actual grant. [17] Chromium's Compute Pressure and CPU Performance documentation illustrate why the hardware/environment inventory must evolve rather than be treated as a permanent exhaustive list. [18][19]
 
 ## Practical conclusion
 
@@ -105,23 +105,23 @@ The extension saves its on/off setting locally and uses no server, telemetry, re
 
 ## Primary sources
 
-1. WHATWG HTML — page visibility, VisibilityStateEntry, user activation and focus: https://html.spec.whatwg.org/multipage/interaction.html
+1. WHATWG HTML: page visibility, VisibilityStateEntry, user activation and focus. https://html.spec.whatwg.org/multipage/interaction.html
 2. WHATWG Fullscreen API: https://fullscreen.spec.whatwg.org/
 3. W3C Window Management, including permission versus Permissions Policy: https://www.w3.org/TR/window-management/
-4. W3C Service Workers — WindowClient and client enumeration: https://w3c.github.io/ServiceWorker/#windowclient
+4. W3C Service Workers: WindowClient and client enumeration. https://w3c.github.io/ServiceWorker/#windowclient
 5. Chrome extension content scripts and MAIN-world behavior: https://developer.chrome.com/docs/extensions/reference/manifest/content-scripts
-6. W3C Media Queries Level 5 — display mode: https://www.w3.org/TR/mediaqueries-5/
+6. W3C Media Queries Level 5: display mode. https://www.w3.org/TR/mediaqueries-5/
 7. WICG Idle Detection API: https://wicg.github.io/idle-detection/
 8. Chrome Page Lifecycle API: https://developer.chrome.com/docs/web-platform/page-lifecycle-api
 9. Chrome background timer throttling: https://developer.chrome.com/blog/timer-throttling-in-chrome-88
 10. W3C Screen Wake Lock API: https://www.w3.org/TR/screen-wake-lock/
 11. W3C Pointer Lock 2.0: https://www.w3.org/TR/pointerlock-2/
-12. WHATWG DOM — event trust: https://dom.spec.whatwg.org/#dom-event-istrusted
+12. WHATWG DOM: event trust. https://dom.spec.whatwg.org/#dom-event-istrusted
 13. W3C Event Timing: https://www.w3.org/TR/event-timing/
 14. W3C Intersection Observer: https://w3c.github.io/IntersectionObserver/
 15. W3C Screen Capture: https://www.w3.org/TR/screen-capture/
 16. W3C Mitigating Browser Fingerprinting in Web Specifications: https://www.w3.org/TR/fingerprinting-guidance/
 17. W3C Permissions: https://www.w3.org/TR/permissions/
-18. Chrome 125 release notes — Compute Pressure: https://developer.chrome.com/release-notes/125
-19. Chrome 152 release notes — CPU Performance: https://developer.chrome.com/release-notes/152
+18. Chrome 125 release notes: Compute Pressure. https://developer.chrome.com/release-notes/125
+19. Chrome 152 release notes: CPU Performance. https://developer.chrome.com/release-notes/152
 20. Chrome unpacked-extension installation: https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world

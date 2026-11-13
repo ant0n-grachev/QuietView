@@ -8,7 +8,7 @@ Webpages can ask whether a tab is visible, whether its window has focus, and wha
 
 ## Installation
 
-Download the [repository ZIP](https://github.com/ant0n-grachev/QuietView/archive/refs/heads/main.zip), or clone the source below. The [local diagnostic](docs/DETAILS.md#local-diagnostic) shows what an installed copy reports in Chrome.
+Install QuietView from the [Chrome Web Store](https://chromewebstore.google.com/detail/quietview/jacjlkiafcipbhmljccjjaignaooohnc). To try the current source, download the [repository ZIP](https://github.com/ant0n-grachev/QuietView/archive/refs/heads/main.zip) or clone the repository using the steps below. The [local diagnostic](docs/DETAILS.md#local-diagnostic) shows what an installed copy reports in Chrome.
 
 <p>
   <a href="docs/images/popup-on.png"><img src="docs/images/popup-on.png" width="180" alt="QuietView in light mode, with protection on"></a>
@@ -77,6 +77,6 @@ Substitutions are best-effort. After an unpacked browser restart, a page opened 
 
 ## Versioning and credits
 
-Current source version **v1.1.0**. The [manifest](extension/manifest.json) defines the application version. See the [changelog](CHANGELOG.md) for unreleased changes and the historical `v1` tag.
+Current source version **v1.1.1**. The [manifest](extension/manifest.json) defines the application version. See the [changelog](CHANGELOG.md) for unreleased changes and the historical `v1` tag.
 
 QuietView is maintained by Anton Grachev and distributed under the [MIT License](LICENSE). For bug reports, include the browser version and a minimal public or local reproduction.

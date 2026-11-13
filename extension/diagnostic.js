@@ -20,7 +20,7 @@
     ['document.visibilityState', () => document.visibilityState, 'visible'],
     ['document.hidden', () => document.hidden, 'false'],
     ['document.hasFocus()', () => document.hasFocus(), 'true'],
-    ['document.fullscreenElement', () => document.fullscreenElement?.tagName ?? null, 'Native by default; null unless actually fullscreen'],
+    ['document.fullscreenElement', () => document.fullscreenElement?.tagName ?? null, 'Native by default. Returns null unless actually fullscreen'],
     ['document.fullscreen', () => document.fullscreen, 'Native by default'],
     ['JS display-mode: fullscreen', () => matchMedia('(display-mode: fullscreen)').matches, 'Native by default'],
     ['Native CSS display-mode', () => getComputedStyle(document.documentElement).getPropertyValue('--native-fullscreen').trim(), 'Native browser display mode'],
@@ -32,8 +32,8 @@
     ['Actual outer dimensions', () => [outerWidth, outerHeight], 'Not substituted'],
     ['devicePixelRatio', () => devicePixelRatio, 'Not substituted'],
     ['IdleDetector readouts', () => typeof IdleDetector === 'function' ?
-      [new IdleDetector().userState, new IdleDetector().screenState] : undefined, 'active, unlocked; Window realm only'],
-    ['Largest animation-frame gap', () => `${Math.round(maxFrameGap)} ms`, 'Real timing; not hidden'],
+      [new IdleDetector().userState, new IdleDetector().screenState] : undefined, 'active, unlocked (Window realm only)'],
+    ['Largest animation-frame gap', () => `${Math.round(maxFrameGap)} ms`, 'Real timing remains visible'],
   ];
   const cells = readings.map(([name,,expected]) => {
     const row = document.createElement('tr');

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QuietView — local diagnostic</title>
+<title>QuietView local diagnostic</title>
 <style>
 :root{--native-fullscreen:no} @media(display-mode:fullscreen){:root{--native-fullscreen:yes}}
 *{box-sizing:border-box}body{font:16px/1.5 system-ui,sans-serif;color:#202124;background:#f5f6f8;margin:0;padding:32px 20px}
@@ -26,6 +26,6 @@ button{cursor:pointer}input{max-width:100%;margin:4px 4px 4px 0}.muted{color:#55
 <label>Second field <input id="second" placeholder="Then click here"></label>
 <pre id="events">No events yet.</pre></section>
 <section><h2>Known limitations visible in this test</h2>
-<p>Fullscreen values stay native by default; enabling optional fullscreen spoofing can create disagreement with CSS. Window dimensions and resize events remain real. A long animation-frame gap can indicate suspension, backgrounding, a busy computer, or other causes; it is not proof of a tab switch.</p>
+<p>Fullscreen values stay native by default. Enabling optional fullscreen spoofing can create disagreement with CSS. Window dimensions and resize events remain real. A long animation-frame gap can indicate suspension, backgrounding, a busy computer, or other causes. A gap alone does not prove that you switched tabs.</p>
 <p>Service-worker visibility/focus, worker APIs, freshly created realms, native API descriptors, real screen sharing, and server-side inactivity are outside this diagnostic’s protection checks.</p>
 </section></main></body></html>

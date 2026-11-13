@@ -12,8 +12,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). App
 
 ### Changed
 
+- Simplify punctuation in the local diagnostic and documentation.
 - Simplify the popup to the switch and a short list of masked browser signals.
 - Document unpacked installation, the privacy scope, and separate fixture, installed-browser, and hardware verification.
+
+## Chrome Web Store
+
+The [Chrome Web Store listing](https://chromewebstore.google.com/detail/quietview/jacjlkiafcipbhmljccjjaignaooohnc) shows `v1.1.0`, updated November 15, 2026.
 
 ## v1.0.0 baseline (tag `v1`)
 
