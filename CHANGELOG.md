@@ -13,6 +13,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). App
 
 - Display the manifest version as `v1.0.0` in Chrome and in the extension popup. The installed-extension suite checks that the popup reads the version from the manifest.
 
+- Document unpacked installation, the privacy scope, and separate fixture, installed-browser, and hardware verification.
+
 ## v1.0.0 baseline (tag `v1`)
 
 The [annotated `v1` tag](https://github.com/ant0n-grachev/QuietView/tree/v1) records the source baseline for manifest version `1.0.0`. The tag is dated 2026-09-07.

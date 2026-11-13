@@ -1,6 +1,6 @@
 # Attention and display privacy in Chromium
 
-Research date: **September 7, 2026**. Implementation updated to **v1** after the attention-masking review. Scope: information an ordinary website can obtain about page attention, window state and connected displays, plus related fingerprinting surfaces. This is a prioritized inventory, not a claim to enumerate every possible side channel. It distinguishes web-platform behavior from the implementation choices in the accompanying prototype.
+Research date: **September 7, 2026**. The historical `v1` tag records the implementation after the attention-masking review. Scope: information an ordinary website can obtain about page attention, window state and connected displays, plus related fingerprinting surfaces. This is a prioritized inventory, not a claim to enumerate every possible side channel. It distinguishes web-platform behavior from the implementation choices in the accompanying prototype.
 
 ## Main finding
 
@@ -22,7 +22,7 @@ Priority here refers to relevance to attention/display disclosure, not a formal 
 | `screen.isExtended` | Whether the desktop extends across more than one screen | Report false | Implemented where the property exists |
 | `getScreenDetails()`, `screenschange`, `currentscreenchange` | Screen count, geometry, labels and changes | One stable synthetic display with no real monitor-change notifications | Implemented with API-shaped data; not a genuine native `ScreenDetailed` |
 | Screen origin, `screenX/Y`, pointer/touch screen coordinates | Coordinates that can expose a virtual-desktop layout | Normalize origin and related coordinate reads together | Implemented for common JavaScript reads; not the browser's internal coordinates |
-| `fullscreenElement`, fullscreen booleans/events | DOM element fullscreen state | Return an element and suppress direct transitions only when willing to accept compatibility risks | Optional **readout-only** substitution; disabled by default in v1 |
+| `fullscreenElement`, fullscreen booleans/events | DOM element fullscreen state | Return an element and suppress direct transitions only when willing to accept compatibility risks | Optional **readout-only** substitution; disabled by default |
 | JavaScript `matchMedia('(display-mode: fullscreen)')` | Browser display-mode state, distinct from element fullscreen | Treat consistently with the requested display-mode profile | Optional simple-query substitution, disabled by default; compound queries and native CSS remain native |
 | `IdleDetector.userState`, `.screenState`, `change` | User idle/active and screen lock state | Prefer denying unnecessary real access; optional page-world readout masking | Readouts masked in Window; native permissions intact; worker version unpatched |
 
