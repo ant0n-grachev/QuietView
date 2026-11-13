@@ -12,7 +12,7 @@ An alternative is to serve the extension directory locally:
 python3 -m http.server 8000 --bind 127.0.0.1 --directory extension
 ```
 
-Then open `http://127.0.0.1:8000/diagnostic.html`. The diagnostic has no remote dependencies or upload behavior. Its screen-details button may prompt for real permission if the extension is not running; do not grant access just to make the test pass.
+Then open `http://127.0.0.1:8000/diagnostic.html`. The diagnostic has no remote dependencies or upload behavior. Its screen-details button may prompt for real permission if the extension is not running. Do not grant access just to make the test pass.
 
 Switch to another tab or window, minimize Chrome, resize it, then return. Inspect the readouts, event history and remaining native signals. A passing diagnostic is **not** proof of resistance to an adversarial site.
 
@@ -23,14 +23,14 @@ Switch to another tab or window, minimize Chrome, resize it, then return. Inspec
 | `document.hidden` / supported legacy alias | `false` |
 | `document.visibilityState` / supported legacy alias | `"visible"` |
 | `document.hasFocus()` | `true` |
-| Document visibility and window/document focus/blur events | Suppressed; ordinary input element focus/blur stays functional |
-| Fullscreen elements, booleans, events, and display-mode queries | Native by default; optional spoofing available in CONFIG |
+| Document visibility and window/document focus/blur events | Suppressed. Ordinary input element focus/blur stays functional |
+| Fullscreen elements, booleans, events, and display-mode queries | Native by default. Optional spoofing available in CONFIG |
 | `screen.isExtended` | `false`, where the API exists |
-| `getScreenDetails()` | Promise for one stable, synthetic screen/details object; no real monitor enumeration |
-| Screen size | Initial current-screen snapshot; does **not** anonymize monitor resolution |
-| Screen origin and mouse/touch screen coordinates | Origin zero; event screen coordinates follow client coordinates |
-| Main-window `IdleDetector.userState` / `.screenState` | `"active"` / `"unlocked"`; changes suppressed; actual permission checks unchanged |
-| Normal visibility performance entry queries / buffered observers | One synthetic initial `visible` entry at time zero; later visibility transitions suppressed |
+| `getScreenDetails()` | Promise for one stable, synthetic screen/details object. No real monitor enumeration |
+| Screen size | Initial current-screen snapshot. Does **not** anonymize monitor resolution |
+| Screen origin and mouse/touch screen coordinates | Origin zero. Event screen coordinates follow client coordinates |
+| Main-window `IdleDetector.userState` / `.screenState` | `"active"` / `"unlocked"`. Changes suppressed. Actual permission checks unchanged |
+| Normal visibility performance entry queries / buffered observers | One synthetic initial `visible` entry at time zero. Later visibility transitions suppressed |
 | Unbuffered visibility observers | No callbacks or queued records for native visibility transitions |
 
 No fake zero-monitor result: one screen is the coherent basic shape for a visible browser window. A fullscreen element is a DOM element, not the Boolean `true`. Returning `true` for every API would be incorrect.
@@ -55,7 +55,7 @@ For individual feature switches, edit the `CONFIG` object at the top of `extensi
 
 **Timing and real interactions.** Chrome may throttle, freeze or discard a background page. This code does not alter timers, `requestAnimationFrame`, `Date`, event timing, user-activation state or `Event.isTrusted`. It does not generate mouse, keyboard or scroll activity. Focus-related CSS, pointer departure, wake-lock release, pointer-lock loss and many lifecycle signals remain observable. Lack of activity is not proof of tab switching, but a site can use it as a signal.
 
-**Navigation.** Moving to another tab leaves the original page available for these substitutions. Navigating the same tab to another URL, closing it, suspending the computer or losing network connectivity does not keep the old page alive or make its server believe it remains active. `beforeunload`, `pagehide`, `freeze`, `resume` and normal save-state behavior are deliberately not suppressed. Some sites save on `visibilitychange`; suppressing that event can still affect autosave or session handling.
+**Navigation.** Moving to another tab leaves the original page available for these substitutions. Navigating the same tab to another URL, closing it, suspending the computer or losing network connectivity does not keep the old page alive or make its server believe it remains active. `beforeunload`, `pagehide`, `freeze`, `resume` and normal save-state behavior are deliberately not suppressed. Some sites save on `visibilitychange`. Suppressing that event can still affect autosave or session handling.
 
 **Not an ad blocker or anonymity tool.** Cookies, account IDs, IP addresses, network headers, tracking requests, canvas/audio/GPU/font fingerprints and hardware identifiers are not covered. A distinctive combination of spoofed values can contribute to fingerprinting. Pairing more spoofing extensions is not automatically stronger privacy and can introduce conflicts.
 

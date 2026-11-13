@@ -77,6 +77,6 @@ Substitutions are best-effort. After an unpacked browser restart, a page opened 
 
 ## Versioning and credits
 
-Current source version **v1.1.0**. The [manifest](extension/manifest.json) defines the application version. See the [changelog](CHANGELOG.md) for unreleased changes and the historical `v1` tag.
+Current source version **v1.1.1**. The [manifest](extension/manifest.json) defines the application version. See the [changelog](CHANGELOG.md) for unreleased changes and the historical `v1` tag.
 
 QuietView is maintained by Anton Grachev and distributed under the [MIT License](LICENSE). For bug reports, include the browser version and a minimal public or local reproduction.
