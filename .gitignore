@@ -1,0 +1,26 @@
+# Local environment and generated files
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.codex/
+.agents/
+
+# Local analysis and historical review artifacts
+graphify-out/
+docs/reviews/
+docs/superpowers/
+SHA256SUMS.json
+
+# Browser test results
+tests/*-results.json
+tests/*-output.txt
+tests/test-results.json
+tests/baseline-results.json
+tests/browser-output.txt
+tests/baseline-output.txt
