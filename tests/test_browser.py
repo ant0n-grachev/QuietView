@@ -378,6 +378,17 @@ try:
             })''')
             check('worker remains outside main-window patches (known limitation)',worker,{'idle':'function','focus':'undefined'})
             check('no uncaught page errors',errors,[])
+            if not ARGS.baseline:
+                extensions = ctx.new_page()
+                extensions.goto('chrome://extensions/')
+                item = extensions.locator('extensions-item').filter(has_text='QuietView')
+                extension_id = item.get_attribute('id')
+                extensions.goto(f'chrome-extension://{extension_id}/popup.html')
+                manifest = json.loads((ROOT/'extension'/'manifest.json').read_text())
+                check('loaded extension popup displays the manifest version',
+                      extensions.locator('#version').inner_text(),
+                      f"{manifest['version_name']} · Local prototype")
+                extensions.close()
             report = {'baseline':ARGS.baseline,'headless':ARGS.headless,'browser':browser_version,
                       'results':results,'observations':observations,
                       'passed':sum(r['status']=='pass' for r in results),

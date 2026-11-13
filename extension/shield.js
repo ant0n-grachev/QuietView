@@ -1,5 +1,4 @@
 /* QuietView — MIT License.
- * Version: v1.
  * Best-effort page-level substitutions, NOT an undetectable browser patch.
  * No network requests, telemetry, storage, or fabricated input events.
  * Edit CONFIG, reload the extension, then reload affected pages to customize.

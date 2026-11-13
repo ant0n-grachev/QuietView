@@ -7,8 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). App
 ### Added
 
 - Run JavaScript syntax checks, core and fixture suites, and the loaded-extension browser suite in GitHub Actions using Playwright’s pinned Chromium.
-
 - Verify that the installed extension reapplies on page reload and gate native hidden-timeline claims on a demonstrated transition and observer delivery.
+
+### Changed
+
+- Display the manifest version as `v1.0.0` in Chrome and in the extension popup. The installed-extension suite checks that the popup reads the version from the manifest.
 
 ## v1.0.0 baseline (tag `v1`)
 

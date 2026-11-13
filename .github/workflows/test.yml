@@ -22,6 +22,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           for script in extension/*.js; do node --check "$script"; done
+          python tests/check_version.py
       - name: Install Playwright and Chromium
         run: |
           python -m pip install -r requirements-dev.txt
